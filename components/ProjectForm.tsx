@@ -129,7 +129,7 @@ const ProjectForm = ({ type, session, project }: Props) => {
                 type="url"
                 title="Website URL"
                 state={form.liveSiteUrl}
-                placeholder="https://flexibble.pro"
+                placeholder="https://jsmastery.pro"
                 setState={(value) => handleStateChange('liveSiteUrl', value)}
             />
 
