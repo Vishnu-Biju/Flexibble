@@ -1,19 +1,28 @@
 "use client"
-import React, { useEffect, useState } from "react";
-import { ProjectInterface } from "@/common.types";
-import Categories from "@/components/Categories";
-import LoadMore from "@/components/LoadMore";
-import ProjectCard from "@/components/ProjectCard";
-import { fetchAllProjects } from "@/lib/actions";
+import { useEffect, useState } from 'react';
+import Categories from '@/components/Categories';
+import LoadMore from '@/components/LoadMore';
+import ProjectCard from '@/components/ProjectCard';
+import { fetchAllProjects } from '@/lib/actions';
 
 type SearchParams = {
   category?: string | null;
-  endCursor?: string | null;
+  endcursor?: string | null;
 };
 
 type Props = {
   searchParams: SearchParams;
-  category?: string | null;
+};
+
+type ProjectInterface = {
+  id: string;
+  image: string;
+  title: string;
+  createdBy: {
+    name: string;
+    avatarUrl: string;
+    id: string;
+  };
 };
 
 type ProjectSearch = {
@@ -28,30 +37,23 @@ type ProjectSearch = {
   };
 };
 
-const Home: React.FC<Props> = ({ searchParams: { category, endCursor } }) => {
-  const [data, setData] = useState<ProjectSearch | null>(null);
+const Home = ({ searchParams: { category, endcursor } }: Props) => {
+  const [projects, setProjects] = useState<ProjectInterface[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
-      let projectsData;
-      if (!category) {
-        // Fetch all projects if no category is specified
-        projectsData = await fetchAllProjects(null, endCursor);
-      } else {
-        projectsData = await fetchAllProjects(category, endCursor);
-      }
-      setData(projectsData as ProjectSearch);
+      const data = await fetchAllProjects(category, endcursor) as ProjectSearch;
+      const projectsToDisplay = data?.projectSearch?.edges.map(edge => edge.node) || [];
+      setProjects(projectsToDisplay);
     };
 
     fetchData();
-  }, [category, endCursor]);
+  }, [category, endcursor]);
 
-  const projectsToDisplay = data?.projectSearch?.edges || [];
-
-  if (projectsToDisplay.length === 0) {
+  if (projects.length === 0) {
     return (
       <section className="flexStart flex-col paddings">
-        <Categories category={category ?? null} />
+        <Categories />
         <p className="no-result-text text-center">No projects found, go create some first.</p>
       </section>
     );
@@ -59,9 +61,9 @@ const Home: React.FC<Props> = ({ searchParams: { category, endCursor } }) => {
 
   return (
     <section className="flexStart flex-col paddings mb-16">
-      <Categories category={category ?? null} />
+      <Categories />
       <section className="projects-grid">
-        {projectsToDisplay.map(({ node }: { node: ProjectInterface }) => (
+        {projects.map(node => (
           <ProjectCard
             key={`${node?.id}`}
             id={node?.id}
@@ -74,10 +76,10 @@ const Home: React.FC<Props> = ({ searchParams: { category, endCursor } }) => {
         ))}
       </section>
       <LoadMore
-        startCursor={data?.projectSearch?.pageInfo?.startCursor}
-        endCursor={data?.projectSearch?.pageInfo?.endCursor}
-        hasPreviousPage={data?.projectSearch?.pageInfo?.hasPreviousPage}
-        hasNextPage={data?.projectSearch?.pageInfo.hasNextPage}
+        startCursor={''}
+        endCursor={''}
+        hasPreviousPage={false}
+        hasNextPage={false}
       />
     </section>
   );

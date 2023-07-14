@@ -85,6 +85,8 @@ query getProjects($category: String, $endCursor: String) {
 
 `;
 
+
+
 export const getProjectByIdQuery = `
   query GetProjectById($id: ID!) {
     project(by: { id: $id }) {
