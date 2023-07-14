@@ -109,13 +109,13 @@ const Home = ({ searchParams: { category, endCursor } }: Props) => {
   }, [category, endCursor]);
 
   const fetchData = async () => {
-    const fetchedData = await fetchAllProjects(category === 'null' ? null : category, endCursor) as ProjectSearch;
+    const fetchedData = await fetchAllProjects(category, endCursor) as ProjectSearch;
     const projectsToDisplay = fetchedData?.projectSearch?.edges.map(({ node }) => node) || [];
     setProjects(projectsToDisplay);
     setData(fetchedData);
   };
 
-  if (projects.length === 0) {
+  if (projects.length === 0 && category !== null) {
     return (
       <section className="flexStart flex-col paddings">
         <Categories />
@@ -127,6 +127,7 @@ const Home = ({ searchParams: { category, endCursor } }: Props) => {
   return (
     <section className="flexStart flex-col paddings mb-16">
       <Categories />
+
       <section className="projects-grid">
         {projects.map(({ id, image, title, createdBy }) => (
           <ProjectCard
@@ -140,15 +141,15 @@ const Home = ({ searchParams: { category, endCursor } }: Props) => {
           />
         ))}
       </section>
+
       <LoadMore
-        startCursor={data?.projectSearch?.pageInfo?.startCursor || ''}
-        endCursor={data?.projectSearch?.pageInfo?.endCursor || ''}
-        hasPreviousPage={data?.projectSearch?.pageInfo?.hasPreviousPage || false}
-        hasNextPage={data?.projectSearch?.pageInfo?.hasNextPage || false}
+        startCursor={endCursor ? data?.projectSearch?.pageInfo?.startCursor : ''}
+        endCursor={endCursor ? data?.projectSearch?.pageInfo?.endCursor : ''}
+        hasPreviousPage={endCursor ? data?.projectSearch?.pageInfo?.hasPreviousPage : false}
+        hasNextPage={endCursor ? data?.projectSearch?.pageInfo?.hasNextPage : false}
       />
     </section>
   );
 };
-
 
 export default Home;
