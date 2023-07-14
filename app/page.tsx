@@ -7,7 +7,7 @@ import { fetchAllProjects } from '@/lib/actions';
 
 type SearchParams = {
   category?: string | null;
-  endcursor?: string | null;
+  endCursor?: string | null;
 };
 
 type Props = {
@@ -37,18 +37,22 @@ type ProjectSearch = {
   };
 };
 
-const Home = ({ searchParams: { category, endcursor } }: Props) => {
+const Home = ({ searchParams: { category, endCursor } }: Props) => {
   const [projects, setProjects] = useState<ProjectInterface[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
-      const data = await fetchAllProjects(category, endcursor) as ProjectSearch;
+      const data = await fetchAllProjects(category === 'null' ? null : category, endCursor) as ProjectSearch;
       const projectsToDisplay = data?.projectSearch?.edges.map(edge => edge.node) || [];
       setProjects(projectsToDisplay);
     };
 
     fetchData();
-  }, [category, endcursor]);
+  }, [category, endCursor]);
+
+  useEffect(() => {
+    setProjects([]); // Clear existing projects when category value changes
+  }, [category]);
 
   if (projects.length === 0) {
     return (
