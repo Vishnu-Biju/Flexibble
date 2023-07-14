@@ -115,7 +115,7 @@ const Home = ({ searchParams: { category, endCursor } }: Props) => {
     setData(fetchedData);
   };
 
-  if (projects.length === 0 && category !== 'null') {
+  if (projects.length === 0) {
     return (
       <section className="flexStart flex-col paddings">
         <Categories />
@@ -140,16 +140,15 @@ const Home = ({ searchParams: { category, endCursor } }: Props) => {
           />
         ))}
       </section>
-      {data?.projectSearch?.pageInfo?.hasNextPage && (
-        <LoadMore
-          startCursor={data?.projectSearch?.pageInfo?.startCursor}
-          endCursor={data?.projectSearch?.pageInfo?.endCursor}
-          hasPreviousPage={data?.projectSearch?.pageInfo?.hasPreviousPage}
-          hasNextPage={data?.projectSearch?.pageInfo?.hasNextPage}
-        />
-      )}
+      <LoadMore
+        startCursor={data?.projectSearch?.pageInfo?.startCursor || ''}
+        endCursor={data?.projectSearch?.pageInfo?.endCursor || ''}
+        hasPreviousPage={data?.projectSearch?.pageInfo?.hasPreviousPage || false}
+        hasNextPage={data?.projectSearch?.pageInfo?.hasNextPage || false}
+      />
     </section>
   );
 };
+
 
 export default Home;
