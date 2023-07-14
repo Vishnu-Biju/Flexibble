@@ -24,7 +24,7 @@ type ProjectSearch = {
       startCursor: string;
       endCursor: string;
     };
-  },
+  };
 };
 
 const Home = ({ searchParams: { category, endCursor } }: Props) => {
@@ -32,7 +32,13 @@ const Home = ({ searchParams: { category, endCursor } }: Props) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const projectsData = await fetchAllProjects(category, endCursor);
+      let projectsData;
+      if (!category) {
+        // Fetch all projects if no category is specified
+        projectsData = await fetchAllProjects(null, endCursor);
+      } else {
+        projectsData = await fetchAllProjects(category, endCursor);
+      }
       setData(projectsData as ProjectSearch);
     };
 
