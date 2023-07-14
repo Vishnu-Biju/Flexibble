@@ -1,13 +1,14 @@
-import { ProjectInterface } from '@/common.types';
-import Categories from '@/components/Categories';
-import LoadMore from '@/components/LoadMore';
-import ProjectCard from '@/components/ProjectCard';
-import { fetchAllProjects } from '@/lib/actions';
-import React from 'react';
+"use client"
+import { useEffect, useState } from "react";
+import { ProjectInterface } from "@/common.types";
+import Categories from "@/components/Categories";
+import LoadMore from "@/components/LoadMore";
+import ProjectCard from "@/components/ProjectCard";
+import { fetchAllProjects } from "@/lib/actions";
 
 type SearchParams = {
-  category?: string | null | undefined;
-  endCursor?: string | null | undefined;
+  category?: string | null;
+  endCursor?: string | null;
 };
 
 type Props = {
@@ -23,19 +24,27 @@ type ProjectSearch = {
       startCursor: string;
       endCursor: string;
     };
-  };
+  },
 };
 
-const Home = async ( { searchParams: { category = null, endCursor = null } }: Props) => {
-  const data = await fetchAllProjects(category, endCursor) as ProjectSearch;
-  console.log('endCursor:', endCursor);
+const Home = ({ searchParams: { category, endCursor } }: Props) => {
+  const [data, setData] = useState<ProjectSearch | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const projectsData = await fetchAllProjects(category, endCursor);
+      setData(projectsData as ProjectSearch);
+    };
+
+    fetchData();
+  }, [category, endCursor]);
+
   const projectsToDisplay = data?.projectSearch?.edges || [];
 
   if (projectsToDisplay.length === 0) {
     return (
       <section className="flexStart flex-col paddings">
         <Categories />
-
         <p className="no-result-text text-center">No projects found, go create some first.</p>
       </section>
     );
@@ -58,10 +67,8 @@ const Home = async ( { searchParams: { category = null, endCursor = null } }: Pr
           />
         ))}
       </section>
-      
-        
+
       <LoadMore
-       
         startCursor={data?.projectSearch?.pageInfo?.startCursor}
         endCursor={data?.projectSearch?.pageInfo?.endCursor}
         hasPreviousPage={data?.projectSearch?.pageInfo?.hasPreviousPage}
