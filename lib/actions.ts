@@ -44,35 +44,16 @@ const makeGraphQLRequest = async (query: string, variables = {}) => {
 export const fetchAllProjects = (category?: string | null, endCursor?: string | null) => {
   client.setHeader('x-api-key', apiKey);
 
-  const query = `
-    query getProjects($category: String, $endCursor: String) {
-      projectSearch(first: 8, after: $endCursor, filter: {category: {eq: $category}}) {
-        pageInfo {
-          hasNextPage
-          hasPreviousPage
-          startCursor
-          endCursor
-        }
-        edges {
-          node {
-            id
-            image
-            title
-            createdBy {
-              name
-              avatarUrl
-              id
-            }
-          }
-        }
-      }
-    }
-  `;
+  const isHomePage = window.location.pathname === '/';
 
-  return client.request(query, { category, endCursor });
+  if (isHomePage) {
+    category = null;
+  }
+
+  return client.request(projectsQuery, { category, endCursor });
 };
 
-//  return client.request(projectsQuery, { category, endCursor });
+
 export const createNewProject = async (form: ProjectForm, creatorId: string, token: string) => {
   const imageUrl = await uploadImage(form.image);
 
