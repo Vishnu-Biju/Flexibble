@@ -115,37 +115,7 @@ const Home = ({ searchParams: { category, endCursor } }: Props) => {
     setData(fetchedData);
   };
 
-  if (category === null) {
-    // Show all projects when category is null
-    return (
-      <section className="flexStart flex-col paddings">
-        <Categories />
-        <section className="projects-grid">
-          {projects.map(({ id, image, title, createdBy }) => (
-            <ProjectCard
-              key={id}
-              id={id}
-              image={image}
-              title={title}
-              name={createdBy.name}
-              avatarUrl={createdBy.avatarUrl}
-              userId={createdBy.id}
-            />
-          ))}
-        </section>
-        {data?.projectSearch?.pageInfo?.hasNextPage && (
-          <LoadMore
-            startCursor={data?.projectSearch?.pageInfo?.startCursor}
-            endCursor={data?.projectSearch?.pageInfo?.endCursor}
-            hasPreviousPage={data?.projectSearch?.pageInfo?.hasPreviousPage}
-            hasNextPage={data?.projectSearch?.pageInfo?.hasNextPage}
-          />
-        )}
-      </section>
-    );
-  }
-
-  if (projects.length === 0) {
+  if (projects.length === 0 && category !== 'null') {
     return (
       <section className="flexStart flex-col paddings">
         <Categories />
