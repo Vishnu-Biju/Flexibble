@@ -1,17 +1,18 @@
-import { ProjectInterface } from "@/common.types";
-import Categories from "@/components/Categories";
-import LoadMore from "@/components/LoadMore";
-import ProjectCard from "@/components/ProjectCard";
-import { fetchAllProjects } from "@/lib/actions";
+import { ProjectInterface } from '@/common.types';
+import Categories from '@/components/Categories';
+import LoadMore from '@/components/LoadMore';
+import ProjectCard from '@/components/ProjectCard';
+import { fetchAllProjects } from '@/lib/actions';
+import React from 'react';
 
 type SearchParams = {
   category?: string | null;
   endCursor?: string | null;
-}
+};
 
 type Props = {
-  searchParams: SearchParams
-}
+  searchParams: SearchParams;
+};
 
 type ProjectSearch = {
   projectSearch: {
@@ -22,16 +23,12 @@ type ProjectSearch = {
       startCursor: string;
       endCursor: string;
     };
-  },
-}
-
-export const dynamic = 'force-dynamic';
-export const dynamicParams = true;
-export const revalidate = 0;
+  };
+};
 
 const Home = async ({ searchParams: { category, endCursor } }: Props) => {
-  const data = await fetchAllProjects(category, endCursor) as ProjectSearch
-
+  const data = await fetchAllProjects(category, endCursor) as ProjectSearch;
+  console.log('endCursor:', endCursor);
   const projectsToDisplay = data?.projectSearch?.edges || [];
 
   if (projectsToDisplay.length === 0) {
@@ -41,7 +38,7 @@ const Home = async ({ searchParams: { category, endCursor } }: Props) => {
 
         <p className="no-result-text text-center">No projects found, go create some first.</p>
       </section>
-    )
+    );
   }
 
   return (
@@ -61,15 +58,17 @@ const Home = async ({ searchParams: { category, endCursor } }: Props) => {
           />
         ))}
       </section>
-
-      <LoadMore 
-        startCursor={data?.projectSearch?.pageInfo?.startCursor} 
-        endCursor={data?.projectSearch?.pageInfo?.endCursor} 
-        hasPreviousPage={data?.projectSearch?.pageInfo?.hasPreviousPage} 
+      
+        
+      <LoadMore
+       
+        startCursor={data?.projectSearch?.pageInfo?.startCursor}
+        endCursor={data?.projectSearch?.pageInfo?.endCursor}
+        hasPreviousPage={data?.projectSearch?.pageInfo?.hasPreviousPage}
         hasNextPage={data?.projectSearch?.pageInfo.hasNextPage}
       />
     </section>
-  )
+  );
 };
 
 export default Home;
