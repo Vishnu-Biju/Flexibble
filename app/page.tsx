@@ -1,6 +1,5 @@
 "use client"
-// Import the required dependencies
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ProjectInterface } from "@/common.types";
 import Categories from "@/components/Categories";
 import LoadMore from "@/components/LoadMore";
@@ -32,20 +31,21 @@ type ProjectSearch = {
 const Home = ({ searchParams: { category, endCursor } }: Props) => {
   const [data, setData] = useState<ProjectSearch | null>(null);
 
+
   useEffect(() => {
     const fetchData = async () => {
       let projectsData;
       if (!category) {
         // Fetch all projects if no category is specified
-        projectsData = await fetchAllProjects(null, endCursor);
+        projectsData = await fetchAllProjects( null, endCursor);
       } else {
-        projectsData = await fetchAllProjects(category, endCursor);
+        projectsData = await fetchAllProjects( category, endCursor);
       }
       setData(projectsData as ProjectSearch);
     };
 
     fetchData();
-  }, [category, endCursor]);
+  }, [ category, endCursor]);
 
   const projectsToDisplay = data?.projectSearch?.edges || [];
 
@@ -53,8 +53,6 @@ const Home = ({ searchParams: { category, endCursor } }: Props) => {
     return (
       <section className="flexStart flex-col paddings">
         <Categories category={category ?? null} />
-
-
         <p className="no-result-text text-center">No projects found, go create some first.</p>
       </section>
     );
@@ -63,9 +61,6 @@ const Home = ({ searchParams: { category, endCursor } }: Props) => {
   return (
     <section className="flexStart flex-col paddings mb-16">
       <Categories category={category ?? null} />
-
-
-
       <section className="projects-grid">
         {projectsToDisplay.map(({ node }: { node: ProjectInterface }) => (
           <ProjectCard
@@ -79,7 +74,6 @@ const Home = ({ searchParams: { category, endCursor } }: Props) => {
           />
         ))}
       </section>
-
       <LoadMore
         startCursor={data?.projectSearch?.pageInfo?.startCursor}
         endCursor={data?.projectSearch?.pageInfo?.endCursor}
