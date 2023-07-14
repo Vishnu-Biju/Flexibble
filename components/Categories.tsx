@@ -6,6 +6,7 @@ import { categoryFilters } from "@/constants";
 type Props = {
   category: string | null; // Update the type of the category prop
 };
+
 const Categories = ({ category }: Props) => {
   const router = useRouter();
   const pathName = usePathname();
