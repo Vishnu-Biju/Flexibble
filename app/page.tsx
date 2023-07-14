@@ -74,6 +74,7 @@
 
 // export default Home;
 "use client"
+
 import { useState, useEffect } from 'react';
 import Categories from '@/components/Categories';
 import LoadMore from '@/components/LoadMore';
@@ -103,6 +104,7 @@ type Props = {
 const Home = ({ searchParams: { category, endCursor } }: Props) => {
   const [projects, setProjects] = useState<ProjectInterface[]>([]);
   const [data, setData] = useState<ProjectSearch | null>(null);
+  const [hasMoreProjects, setHasMoreProjects] = useState<boolean>(false);
 
   useEffect(() => {
     fetchData();
@@ -111,7 +113,7 @@ const Home = ({ searchParams: { category, endCursor } }: Props) => {
   const fetchData = async () => {
     let fetchedData: ProjectSearch;
 
-    if (category === null) {
+    if (category === undefined) {
       // Fetch all projects
       fetchedData = await fetchAllProjects(null, endCursor) as ProjectSearch;
     } else {
@@ -122,9 +124,12 @@ const Home = ({ searchParams: { category, endCursor } }: Props) => {
     const projectsToDisplay = fetchedData?.projectSearch?.edges.map(({ node }) => node) || [];
     setProjects(projectsToDisplay);
     setData(fetchedData);
+
+    const hasMore = fetchedData?.projectSearch?.pageInfo?.hasNextPage || false;
+    setHasMoreProjects(hasMore);
   };
 
-  if (projects.length === 0 && category !== null) {
+  if (projects.length === 0 && category !== undefined) {
     return (
       <section className="flexStart flex-col paddings">
         <Categories />
@@ -136,7 +141,6 @@ const Home = ({ searchParams: { category, endCursor } }: Props) => {
   return (
     <section className="flexStart flex-col paddings mb-16">
       <Categories />
-
       <section className="projects-grid">
         {projects.map(({ id, image, title, createdBy }) => (
           <ProjectCard
@@ -150,13 +154,14 @@ const Home = ({ searchParams: { category, endCursor } }: Props) => {
           />
         ))}
       </section>
-
-      <LoadMore
-        startCursor={endCursor ? data?.projectSearch?.pageInfo?.startCursor : ''}
-        endCursor={endCursor ? data?.projectSearch?.pageInfo?.endCursor : ''}
-        hasPreviousPage={endCursor ? data?.projectSearch?.pageInfo?.hasPreviousPage : false}
-        hasNextPage={endCursor ? data?.projectSearch?.pageInfo?.hasNextPage : false}
-      />
+      {data?.projectSearch?.pageInfo?.hasNextPage && (
+        <LoadMore
+          startCursor={data?.projectSearch?.pageInfo?.startCursor}
+          endCursor={data?.projectSearch?.pageInfo?.endCursor}
+          hasPreviousPage={data?.projectSearch?.pageInfo?.hasPreviousPage}
+          hasNextPage={data?.projectSearch?.pageInfo?.hasNextPage}
+        />
+      )}
     </section>
   );
 };
