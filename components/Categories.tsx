@@ -10,11 +10,11 @@ const Categories = () => {
   const searchParams = useSearchParams();
 
   const category = searchParams.get("category");
-  console.log(category)
+
   const handleTags = (item: string) => {
     router.push(`${pathName}?category=${item}`);
   };
- 
+
   return (
     <div className="flexBetween w-full gap-5 flex-wrap">
       <ul className="flex gap-2 overflow-auto">
