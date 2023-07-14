@@ -44,15 +44,8 @@ const makeGraphQLRequest = async (query: string, variables = {}) => {
 export const fetchAllProjects = (category?: string | null, endCursor?: string | null) => {
   client.setHeader('x-api-key', apiKey);
 
-  const isHomePage = window.location.pathname === '/';
-
-  if (isHomePage) {
-    category = null;
-  }
-
   return client.request(projectsQuery, { category, endCursor });
 };
-
 
 export const createNewProject = async (form: ProjectForm, creatorId: string, token: string) => {
   const imageUrl = await uploadImage(form.image);

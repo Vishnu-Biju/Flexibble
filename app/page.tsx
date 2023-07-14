@@ -109,7 +109,16 @@ const Home = ({ searchParams: { category, endCursor } }: Props) => {
   }, [category, endCursor]);
 
   const fetchData = async () => {
-    const fetchedData = await fetchAllProjects(category, endCursor) as ProjectSearch;
+    let fetchedData: ProjectSearch;
+
+    if (category === null) {
+      // Fetch all projects
+      fetchedData = await fetchAllProjects(null, endCursor) as ProjectSearch;
+    } else {
+      // Fetch projects based on category
+      fetchedData = await fetchAllProjects(category, endCursor) as ProjectSearch;
+    }
+
     const projectsToDisplay = fetchedData?.projectSearch?.edges.map(({ node }) => node) || [];
     setProjects(projectsToDisplay);
     setData(fetchedData);
