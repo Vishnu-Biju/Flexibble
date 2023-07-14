@@ -115,20 +115,33 @@ const Home = ({ searchParams: { category, endCursor } }: Props) => {
     setProjects(projectsToDisplay);
     setData(fetchedData);
   };
-
-  if (projects.length === 0) {
+ console.log(projects.length)
+  if (projects.length == 0) {
     return (
       <section className="flexStart flex-col paddings">
         <Categories />
         <p className="no-result-text text-center">No projects found, go create some first.</p>
-        {data?.projectSearch?.pageInfo?.hasNextPage && (
-          <LoadMore
-            startCursor={data?.projectSearch?.pageInfo?.startCursor}
-            endCursor={data?.projectSearch?.pageInfo?.endCursor}
-            hasPreviousPage={data?.projectSearch?.pageInfo?.hasPreviousPage}
-            hasNextPage={data?.projectSearch?.pageInfo?.hasNextPage}
+        <section className="projects-grid">
+        {projects.map(({ id, image, title, createdBy }) => (
+          <ProjectCard
+            key={id}
+            id={id}
+            image={image}
+            title={title}
+            name={createdBy.name}
+            avatarUrl={createdBy.avatarUrl}
+            userId={createdBy.id}
           />
-        )}
+        ))}
+      </section>
+      {data?.projectSearch?.pageInfo?.hasNextPage && (
+        <LoadMore
+          startCursor={data?.projectSearch?.pageInfo?.startCursor}
+          endCursor={data?.projectSearch?.pageInfo?.endCursor}
+          hasPreviousPage={data?.projectSearch?.pageInfo?.hasPreviousPage}
+          hasNextPage={data?.projectSearch?.pageInfo?.hasNextPage}
+        />
+      )}
       </section>
     );
   }
