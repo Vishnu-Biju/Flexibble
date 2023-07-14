@@ -1,4 +1,5 @@
 "use client"
+// Import the required dependencies
 import { useEffect, useState } from "react";
 import { ProjectInterface } from "@/common.types";
 import Categories from "@/components/Categories";
@@ -13,6 +14,7 @@ type SearchParams = {
 
 type Props = {
   searchParams: SearchParams;
+  category?: string | null;
 };
 
 type ProjectSearch = {
@@ -46,11 +48,13 @@ const Home = ({ searchParams: { category, endCursor } }: Props) => {
   }, [category, endCursor]);
 
   const projectsToDisplay = data?.projectSearch?.edges || [];
-  console.log(projectsToDisplay);
+
   if (projectsToDisplay.length === 0) {
     return (
       <section className="flexStart flex-col paddings">
-        <Categories />
+        <Categories category={category ?? null} />
+
+
         <p className="no-result-text text-center">No projects found, go create some first.</p>
       </section>
     );
@@ -58,7 +62,9 @@ const Home = ({ searchParams: { category, endCursor } }: Props) => {
 
   return (
     <section className="flexStart flex-col paddings mb-16">
-      <Categories />
+      <Categories category={category ?? null} />
+
+
 
       <section className="projects-grid">
         {projectsToDisplay.map(({ node }: { node: ProjectInterface }) => (

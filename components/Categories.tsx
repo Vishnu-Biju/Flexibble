@@ -1,15 +1,14 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-
 import { categoryFilters } from "@/constants";
 
-const Categories = () => {
+type Props = {
+  category: string | null; // Update the type of the category prop
+};
+const Categories = ({ category }: Props) => {
   const router = useRouter();
   const pathName = usePathname();
-  const searchParams = useSearchParams();
-
-  const category = searchParams.get("category");
 
   const handleTags = (item: string) => {
     router.push(`${pathName}?category=${item}`);
