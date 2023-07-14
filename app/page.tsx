@@ -74,8 +74,8 @@
 
 // export default Home;
 "use client"
-
 import { useState, useEffect } from 'react';
+
 import Categories from '@/components/Categories';
 import LoadMore from '@/components/LoadMore';
 import ProjectCard from '@/components/ProjectCard';
@@ -102,49 +102,27 @@ type Props = {
 };
 
 const Home = ({ searchParams: { category, endCursor } }: Props) => {
+  
   const [projects, setProjects] = useState<ProjectInterface[]>([]);
   const [data, setData] = useState<ProjectSearch | null>(null);
+  const [hasMoreProjects, setHasMoreProjects] = useState<boolean>(false);
 
   useEffect(() => {
-    fetchData();
+    // Set default category to 'Frontend' if not provided in the URL
+    const defaultCategory = category || 'Frontend';
+
+    fetchData(defaultCategory, endCursor);
   }, [category, endCursor]);
 
-  const fetchData = async () => {
-    const fetchedData = await fetchAllProjects(category === 'null' ? null : category, endCursor) as ProjectSearch;
+  const fetchData = async (category: string, endCursor?: string | null) => {
+    const fetchedData = await fetchAllProjects(category, endCursor) as ProjectSearch;
     const projectsToDisplay = fetchedData?.projectSearch?.edges.map(({ node }) => node) || [];
     setProjects(projectsToDisplay);
     setData(fetchedData);
+
+    const hasMore = fetchedData?.projectSearch?.pageInfo?.hasNextPage || false;
+    setHasMoreProjects(hasMore);
   };
- console.log(projects.length)
-  if (projects.length == 0) {
-    return (
-      <section className="flexStart flex-col paddings">
-        <Categories />
-        <p className="no-result-text text-center">No projects found, go create some first.</p>
-        <section className="projects-grid">
-        {projects.map(({ id, image, title, createdBy }) => (
-          <ProjectCard
-            key={id}
-            id={id}
-            image={image}
-            title={title}
-            name={createdBy.name}
-            avatarUrl={createdBy.avatarUrl}
-            userId={createdBy.id}
-          />
-        ))}
-      </section>
-      {data?.projectSearch?.pageInfo?.hasNextPage && (
-        <LoadMore
-          startCursor={data?.projectSearch?.pageInfo?.startCursor}
-          endCursor={data?.projectSearch?.pageInfo?.endCursor}
-          hasPreviousPage={data?.projectSearch?.pageInfo?.hasPreviousPage}
-          hasNextPage={data?.projectSearch?.pageInfo?.hasNextPage}
-        />
-      )}
-      </section>
-    );
-  }
 
   return (
     <section className="flexStart flex-col paddings mb-16">
@@ -162,7 +140,7 @@ const Home = ({ searchParams: { category, endCursor } }: Props) => {
           />
         ))}
       </section>
-      {data?.projectSearch?.pageInfo?.hasNextPage && (
+      {hasMoreProjects && (
         <LoadMore
           startCursor={data?.projectSearch?.pageInfo?.startCursor}
           endCursor={data?.projectSearch?.pageInfo?.endCursor}
@@ -175,3 +153,4 @@ const Home = ({ searchParams: { category, endCursor } }: Props) => {
 };
 
 export default Home;
+
