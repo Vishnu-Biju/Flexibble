@@ -74,7 +74,6 @@
 
 // export default Home;
 "use client"
-
 import { useState, useEffect } from 'react';
 import Categories from '@/components/Categories';
 import LoadMore from '@/components/LoadMore';
@@ -116,11 +115,24 @@ const Home = ({ searchParams: { category, endCursor } }: Props) => {
     setData(fetchedData);
   };
 
-  if (projects.length === 0) {
+  if (category === null) {
+    // Show all projects when category is null
     return (
       <section className="flexStart flex-col paddings">
         <Categories />
-        <p className="no-result-text text-center">No projects found, go create some first.</p>
+        <section className="projects-grid">
+          {projects.map(({ id, image, title, createdBy }) => (
+            <ProjectCard
+              key={id}
+              id={id}
+              image={image}
+              title={title}
+              name={createdBy.name}
+              avatarUrl={createdBy.avatarUrl}
+              userId={createdBy.id}
+            />
+          ))}
+        </section>
         {data?.projectSearch?.pageInfo?.hasNextPage && (
           <LoadMore
             startCursor={data?.projectSearch?.pageInfo?.startCursor}
@@ -129,6 +141,15 @@ const Home = ({ searchParams: { category, endCursor } }: Props) => {
             hasNextPage={data?.projectSearch?.pageInfo?.hasNextPage}
           />
         )}
+      </section>
+    );
+  }
+
+  if (projects.length === 0) {
+    return (
+      <section className="flexStart flex-col paddings">
+        <Categories />
+        <p className="no-result-text text-center">No projects found, go create some first.</p>
       </section>
     );
   }
