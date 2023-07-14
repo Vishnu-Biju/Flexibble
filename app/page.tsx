@@ -35,7 +35,7 @@ const Home = ({ searchParams: { category, endCursor } }: Props) => {
       let projectsData;
       if (!category) {
         // Fetch all projects if no category is specified
-        projectsData = await fetchAllProjects(null, endCursor);
+        projectsData = await fetchAllProjects(null, null);
       } else {
         projectsData = await fetchAllProjects(category, endCursor);
       }
