@@ -6,8 +6,8 @@ import { fetchAllProjects } from '@/lib/actions';
 import React from 'react';
 
 type SearchParams = {
-  category?: string | null;
-  endCursor?: string | null;
+  category?: string | null | undefined;
+  endCursor?: string | null | undefined;
 };
 
 type Props = {
