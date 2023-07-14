@@ -1,21 +1,23 @@
 "use client";
 
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { categoryFilters } from '@/constants';
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { categoryFilters } from "@/constants";
 
-type CategoriesProps = {
-  category: string | null;
-  onCategoryChange: (selectedCategory: string | null) => void;
-};
-
-const Categories: React.FC<CategoriesProps> = ({ category, onCategoryChange }) => {
+const Categories = () => {
   const router = useRouter();
   const pathName = usePathname();
   const searchParams = useSearchParams();
 
+  const category = searchParams.get("category");
+
   const handleTags = (item: string) => {
-    onCategoryChange(item);
-    router.push(`${pathName}?category=${item}`);
+    const updatedParams = new URLSearchParams(window.location.search);
+    updatedParams.set("category", item);
+
+    const newSearchParams = updatedParams.toString();
+    const newPathname = `${window.location.pathname}?${newSearchParams}`;
+
+    router.push(newPathname);
   };
 
   return (
@@ -27,7 +29,9 @@ const Categories: React.FC<CategoriesProps> = ({ category, onCategoryChange }) =
             type="button"
             onClick={() => handleTags(filter)}
             className={`${
-              category === filter ? 'bg-light-white-300 font-medium' : 'font-normal'
+              category === filter
+                ? "bg-light-white-300 font-medium"
+                : "font-normal"
             } px-4 py-3 rounded-lg capitalize whitespace-nowrap`}
           >
             {filter}
