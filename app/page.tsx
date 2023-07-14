@@ -37,27 +37,41 @@ type ProjectSearch = {
   };
 };
 
-const Home = ({ searchParams: { category, endCursor } }: Props) => {
+const Home: React.FC<Props> = ({ searchParams: { category: initialCategory = null, endCursor } }) => {
+  const [category, setCategory] = useState<string | null>(initialCategory);
   const [projects, setProjects] = useState<ProjectInterface[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
-      const data = await fetchAllProjects(category === 'null' ? null : category, endCursor) as ProjectSearch;
-      const projectsToDisplay = data?.projectSearch?.edges.map(edge => edge.node) || [];
-      setProjects(projectsToDisplay);
+      if (category === null) {
+        // Fetch all projects when category is null
+        const data = await fetchAllProjects(null, endCursor) as ProjectSearch;
+        const projectsToDisplay = data?.projectSearch?.edges.map(edge => edge.node) || [];
+        setProjects(projectsToDisplay);
+      } else {
+        // Fetch projects filtered by category
+        const data = await fetchAllProjects(category, endCursor) as ProjectSearch;
+        const projectsToDisplay = data?.projectSearch?.edges.map(edge => edge.node) || [];
+        setProjects(projectsToDisplay);
+      }
     };
 
     fetchData();
   }, [category, endCursor]);
 
   useEffect(() => {
-    setProjects([]); // Clear existing projects when category value changes
-  }, [category]);
+    setCategory(initialCategory);
+    setProjects([]);
+  }, [initialCategory]);
+
+  const handleCategoryChange = (selectedCategory: string | null) => {
+    setCategory(selectedCategory);
+  };
 
   if (projects.length === 0) {
     return (
       <section className="flexStart flex-col paddings">
-        <Categories />
+        <Categories category={category} onCategoryChange={handleCategoryChange} />
         <p className="no-result-text text-center">No projects found, go create some first.</p>
       </section>
     );
@@ -65,7 +79,7 @@ const Home = ({ searchParams: { category, endCursor } }: Props) => {
 
   return (
     <section className="flexStart flex-col paddings mb-16">
-      <Categories />
+      <Categories category={category} onCategoryChange={handleCategoryChange} />
       <section className="projects-grid">
         {projects.map(node => (
           <ProjectCard

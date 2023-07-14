@@ -1,17 +1,20 @@
 "use client";
 
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { categoryFilters } from '@/constants';
 
-import { categoryFilters } from "@/constants";
+type CategoriesProps = {
+  category: string | null;
+  onCategoryChange: (selectedCategory: string | null) => void;
+};
 
-const Categories = () => {
+const Categories: React.FC<CategoriesProps> = ({ category, onCategoryChange }) => {
   const router = useRouter();
   const pathName = usePathname();
   const searchParams = useSearchParams();
 
-  const category = searchParams.get("category");
-
   const handleTags = (item: string) => {
+    onCategoryChange(item);
     router.push(`${pathName}?category=${item}`);
   };
 
@@ -24,9 +27,7 @@ const Categories = () => {
             type="button"
             onClick={() => handleTags(filter)}
             className={`${
-              category === filter
-                ? "bg-light-white-300 font-medium"
-                : "font-normal"
+              category === filter ? 'bg-light-white-300 font-medium' : 'font-normal'
             } px-4 py-3 rounded-lg capitalize whitespace-nowrap`}
           >
             {filter}
