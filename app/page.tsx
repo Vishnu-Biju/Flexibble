@@ -26,7 +26,7 @@ type ProjectSearch = {
   };
 };
 
-const Home = async ({ searchParams: { category, endCursor } }: Props) => {
+const Home = async ( { searchParams: { category = null, endCursor = null } }: Props) => {
   const data = await fetchAllProjects(category, endCursor) as ProjectSearch;
   console.log('endCursor:', endCursor);
   const projectsToDisplay = data?.projectSearch?.edges || [];
