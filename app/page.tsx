@@ -1,3 +1,5 @@
+"use client"
+import { useEffect, useState } from "react";
 import { ProjectInterface } from "@/common.types";
 import Categories from "@/components/Categories";
 import LoadMore from "@/components/LoadMore";
@@ -7,11 +9,11 @@ import { fetchAllProjects } from "@/lib/actions";
 type SearchParams = {
   category?: string | null;
   endCursor?: string | null;
-}
+};
 
 type Props = {
-  searchParams: SearchParams
-}
+  searchParams: SearchParams;
+};
 
 type ProjectSearch = {
   projectSearch: {
@@ -22,26 +24,36 @@ type ProjectSearch = {
       startCursor: string;
       endCursor: string;
     };
-  },
-}
+  };
+};
 
-export const dynamic = 'force-dynamic';
-export const dynamicParams = true;
-export const revalidate = 0;
+const Home = ({ searchParams: { category, endCursor } }: Props) => {
+  const [data, setData] = useState<ProjectSearch | null>(null);
 
-const Home = async ({ searchParams: { category, endCursor } }: Props) => {
-  const data = await fetchAllProjects(category, endCursor) as ProjectSearch
+  useEffect(() => {
+    const fetchData = async () => {
+      let projectsData;
+      if (!category) {
+        // Fetch all projects if no category is specified
+        projectsData = await fetchAllProjects(null, endCursor);
+      } else {
+        projectsData = await fetchAllProjects(category, endCursor);
+      }
+      setData(projectsData as ProjectSearch);
+    };
+
+    fetchData();
+  }, [category, endCursor]);
 
   const projectsToDisplay = data?.projectSearch?.edges || [];
-
+  console.log(projectsToDisplay);
   if (projectsToDisplay.length === 0) {
     return (
       <section className="flexStart flex-col paddings">
         <Categories />
-
         <p className="no-result-text text-center">No projects found, go create some first.</p>
       </section>
-    )
+    );
   }
 
   return (
@@ -62,14 +74,14 @@ const Home = async ({ searchParams: { category, endCursor } }: Props) => {
         ))}
       </section>
 
-      <LoadMore 
-        startCursor={data?.projectSearch?.pageInfo?.startCursor} 
-        endCursor={data?.projectSearch?.pageInfo?.endCursor} 
-        hasPreviousPage={data?.projectSearch?.pageInfo?.hasPreviousPage} 
+      <LoadMore
+        startCursor={data?.projectSearch?.pageInfo?.startCursor}
+        endCursor={data?.projectSearch?.pageInfo?.endCursor}
+        hasPreviousPage={data?.projectSearch?.pageInfo?.hasPreviousPage}
         hasNextPage={data?.projectSearch?.pageInfo.hasNextPage}
       />
     </section>
-  )
+  );
 };
 
 export default Home;
